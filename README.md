@@ -97,9 +97,9 @@ python -m compileall -q src
 
 | 平台 | 状态 |
 |------|------|
-| Windows 10/11 | 实测：三格式加密/解密回环、SFX exe、GUI、托盘、右键菜单、自启动、记录 |
-| macOS | 代码已实现（`.command` 自解压、Quick Action、LaunchAgent），**待实机验证** |
-| Linux | 代码已实现（`.run`、Nautilus 脚本、autostart），待实机验证 |
+| Windows 10/11 | 本机 + CI 实测：三格式加密/解密回环、SFX exe、GUI、托盘、右键菜单、自启动、记录 |
+| macOS | CI（macos-latest / arm64）构建通过，`.app` 已 ad-hoc 签名；**未在实机运行验证** |
+| Linux | CI（ubuntu-22.04 / x64）构建通过；**未在实机运行验证** |
 
 ## 打包
 

@@ -12,6 +12,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import shutil
 import subprocess
 import sys
@@ -154,6 +155,36 @@ def make_zip() -> Path | None:
     return archive
 
 
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def write_checksums(archive: Path | None) -> Path | None:
+    targets: list[Path] = []
+    if sys.platform == "win32":
+        targets = [DIST / "SealBox" / "SealBox.exe", DIST / "SealBoxCLI" / "SealBoxCLI.exe"]
+    elif sys.platform == "darwin":
+        targets = [
+            DIST / "SealBox.app" / "Contents" / "MacOS" / "SealBox",
+            DIST / "SealBoxCLI" / "SealBoxCLI",
+        ]
+    else:
+        targets = [DIST / "SealBox" / "SealBox", DIST / "SealBoxCLI" / "SealBoxCLI"]
+    items = [item for item in targets if item.is_file()]
+    if archive is not None and archive.is_file():
+        items.append(archive)
+    if not items:
+        return None
+    lines = [f"{sha256_file(item)}  {item.relative_to(DIST).as_posix()}" for item in items]
+    path = DIST / "SHA256SUMS.txt"
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return path
+
+
 def summary() -> None:
     print("\n构建产物：")
     for item in sorted(DIST.iterdir()):
@@ -177,6 +208,9 @@ def main() -> int:
     archive = make_zip()
     if archive:
         print(f"便携包：{archive}")
+    sums = write_checksums(archive)
+    if sums:
+        print(f"校验和：{sums}")
     summary()
     return 0
 

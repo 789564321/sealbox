@@ -54,5 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: dist/*
+          path: |
+            dist/*.zip
+            dist/SHA256SUMS.txt
           if-no-files-found: error

@@ -57,7 +57,7 @@ python -m sealbox --autostart disable
 ```
 
 - Windows：文件、文件夹、文件夹空白处 →「SealBox 封印盒」，子菜单可选 7z / ZIP / 自解压 / 全部。
-- 多选：资源管理器「发送到 → SealBox 加密」，会把全部选中项作为一次任务。
+- 右键菜单只做注册/移除，不改动任何快捷方式。
 - macOS：安装 Finder 快速操作（`~/Library/Services`），首次需在「系统设置 → 键盘 → 服务」勾选。**未在实机验证**。
 - Linux：写入 Nautilus / Nemo / Caja 的 scripts 目录。
 

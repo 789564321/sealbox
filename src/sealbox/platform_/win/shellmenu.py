@@ -11,7 +11,6 @@
 from __future__ import annotations
 
 import ctypes
-import os
 import sys
 from pathlib import Path
 
@@ -22,7 +21,6 @@ except ImportError:  # 非 Windows
 
 ROOT = r"Software\Classes"
 MENU_TEXT = "SealBox 加密 / 解压…"
-SENDTO_NAME = "SealBox 加密.vbs"
 
 VERBS = {
     "file": r"*\shell\SealBox",
@@ -124,42 +122,6 @@ def is_installed() -> bool:
         return False
 
 
-def _sendto_dir() -> Path:
-    appdata = os.environ.get("APPDATA") or str(Path.home() / "AppData" / "Roaming")
-    return Path(appdata) / "Microsoft" / "Windows" / "SendTo"
-
-
-def _write_sendto() -> Path:
-    """发送到入口：资源管理器会把全部选中项一次性作为参数传入。"""
-    folder = _sendto_dir()
-    folder.mkdir(parents=True, exist_ok=True)
-    target = folder / SENDTO_NAME
-    prefix = " ".join(_quote(part) for part in launcher())
-    script = (
-        "Option Explicit\n"
-        "Dim sh, cmd, a\n"
-        'Set sh = CreateObject("WScript.Shell")\n'
-        f'cmd = "{prefix} --seal --gui"\n'
-        "For Each a In WScript.Arguments\n"
-        '  cmd = cmd & " " & Chr(34) & a & Chr(34)\n'
-        "Next\n"
-        "sh.Run cmd, 0, False\n"
-    )
-    target.write_text(script, encoding="utf-8")
-    return target
-
-
-def _remove_sendto() -> bool:
-    target = _sendto_dir() / SENDTO_NAME
-    try:
-        if target.is_file():
-            target.unlink()
-            return True
-    except OSError:
-        pass
-    return False
-
-
 def install_menu() -> list[str]:
     _require()
     # 先清掉旧结构（含级联菜单的 15 个重复项）
@@ -170,12 +132,10 @@ def install_menu() -> list[str]:
     for kind, key_path in VERBS.items():
         _set_values(_full(key_path), {"MUIVerb": MENU_TEXT, "Icon": icon})
         _set_values(_full(key_path) + r"\command", {"": _command(targets[kind])})
-    sendto = _write_sendto()
     _notify_shell()
     return [
         "已注册右键菜单（仅当前用户，免管理员）：",
         "  文件 / 文件夹 / 文件夹空白处 → 「SealBox 加密 / 解压…」",
-        f"  多选入口：{sendto}",
         "已通知资源管理器刷新；若仍未显示，注销后重新登录即可。",
     ]
 
@@ -183,10 +143,9 @@ def install_menu() -> list[str]:
 def uninstall_menu() -> list[str]:
     _require()
     removed = [key for key in LEGACY if _delete_tree(_full(key))]
-    _remove_sendto()
     _notify_shell()
     if removed:
-        return [f"已移除右键菜单（{len(removed)} 个键）与发送到快捷方式。"]
+        return [f"已移除右键菜单（{len(removed)} 个键）。"]
     return ["没有找到已注册的右键菜单。"]
 
 
@@ -202,7 +161,6 @@ def status() -> dict:
             value = None
         keys[kind] = value
     info["keys"] = keys
-    info["sendto"] = str(_sendto_dir() / SENDTO_NAME)
     return info
 
 
@@ -227,7 +185,5 @@ def doctor() -> list[str]:
             lines.append(f"        {command}")
         except OSError:
             lines.append(f"  [{kind}] 未注册：{full}")
-    sendto = _sendto_dir() / SENDTO_NAME
-    lines.append(f"  发送到：{sendto}（存在：{sendto.is_file()}）")
     lines.append("  提示：若 Win10 未显示，执行 --uninstall-menu 再 --install-menu，或重启资源管理器。")
     return lines

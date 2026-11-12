@@ -98,8 +98,8 @@ python -m compileall -q src
 | 平台 | 状态 |
 |------|------|
 | Windows 10/11 | 本机 + CI 实测：三格式加密/解密回环、SFX exe、GUI、托盘、右键菜单、自启动、记录 |
-| macOS | CI（macos-latest / arm64）构建通过，`.app` 已 ad-hoc 签名；**未在实机运行验证** |
-| Linux | CI（ubuntu-22.04 / x64）构建通过；**未在实机运行验证** |
+| macOS | CI（macos-latest / arm64）构建通过；产物已下载并校验（Mach-O arm64、内置 7zz）；**未在实机运行验证** |
+| Linux | CI（ubuntu-22.04 / x64）构建通过；产物已下载并校验（ELF x64、内置 7zz）；**未在实机运行验证** |
 
 ## 打包
 

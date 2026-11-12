@@ -1,0 +1,7 @@
+本目录内置 7-Zip（Igor Pavlov），按 GNU LGPL 分发。
+
+- 许可证全文：https://7-zip.org/license.txt
+- 源码下载：https://7-zip.org/download.html
+
+Windows 包含 7z.exe / 7z.dll / 7z.sfx / 7zCon.sfx；macOS 与 Linux 包含 7zz。
+SealBox 只在运行时以子进程方式调用它们，不修改其代码。

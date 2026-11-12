@@ -23,6 +23,13 @@ VENDOR = ROOT / "_vendor" / "7z"
 DIST = ROOT / "dist"
 WORK = ROOT / "build" / "pyinstaller"
 
+# CI（Windows runner）的控制台是 cp1252，不转 UTF-8 会因中文 print 直接崩。
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 
 def _copy_if_missing(src: Path, dest: Path) -> bool:
     if not src.is_file():

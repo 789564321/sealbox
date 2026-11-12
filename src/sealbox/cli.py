@@ -56,6 +56,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--gui", action="store_true", help="强制打开窗口（默认行为）")
     parser.add_argument("--install-menu", action="store_true", help="注册文件/文件夹右键菜单")
     parser.add_argument("--uninstall-menu", action="store_true", help="移除右键菜单")
+    parser.add_argument("--menu-status", action="store_true", help="检查右键菜单注册状态")
     parser.add_argument(
         "--autostart",
         choices=("enable", "disable", "status"),
@@ -110,6 +111,8 @@ def main(argv: list[str] | None = None) -> int:
         return _menu(install=True)
     if args.uninstall_menu:
         return _menu(install=False)
+    if args.menu_status:
+        return _menu_status()
 
     paths = [str(p) for p in args.paths]
     wants_gui = args.gui or (not args.cli and not args.json)
@@ -283,6 +286,20 @@ def _check() -> int:
         print(f"Qt：PySide6 {PySide6.__version__}")
     except Exception:
         print("Qt：未安装（只能用 --cli）")
+    return 0
+
+
+def _menu_status() -> int:
+    try:
+        from .platform_ import backend
+
+        mod = backend()
+        lines = mod.doctor() if hasattr(mod, "doctor") else [str(mod.status())]
+    except Exception as exc:
+        print(f"检查失败：{exc}", file=sys.stderr)
+        return 1
+    for line in lines:
+        print(line)
     return 0
 
 

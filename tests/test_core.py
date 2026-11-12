@@ -210,6 +210,15 @@ class RoundTripTests(unittest.TestCase):
         self.assertNotEqual(second.outputs[0], first)
         self.assertTrue(first.exists() and second.outputs[0].exists())
 
+    def test_custom_base_name(self) -> None:
+        options = job.JobOptions(
+            formats=("zip",), output_dir=self.out, base_name="自定义包名", verify=False
+        )
+        task = job.plan_task([self.src], options)
+        job.execute_task(task, sz=SevenZip(find_sevenzip()))
+        self.assertEqual(task.state, job.STATE_DONE, task.error)
+        self.assertEqual(task.outputs[0].name, "自定义包名.zip")
+
 
 if __name__ == "__main__":
     unittest.main()

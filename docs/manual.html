@@ -105,7 +105,7 @@
   <tr><td>密码 TXT</td><td>自动写出 <code>&lt;名称&gt;.密码.txt</code>，含密码、格式、大小、SHA-256、解压命令。</td></tr>
   <tr><td>拖拽即用</td><td>文件/文件夹拖进窗口；也可以直接拖到程序图标上，程序会打开并预置任务。</td></tr>
   <tr><td>压缩记录</td><td>记录原名 → 包名、密码、大小、SHA-256，可复制、打开位置、导出 CSV。</td></tr>
-  <tr><td>右键菜单</td><td>Windows 文件/文件夹/空白处；macOS 快速操作；Linux 文件管理器脚本。</td></tr>
+  <tr><td>右键菜单</td><td>Windows 文件/文件夹/空白处：单个入口「SealBox 加密 / 解压…」，打开窗口后选格式。</td></tr>
   <tr><td>托盘与自启</td><td>关闭最小化到托盘；开机自启动后静默驻留托盘。</td></tr>
   <tr><td>命令行</td><td><code>--seal</code> / <code>--extract</code> / <code>--verify</code>，可脚本化、可 <code>--json</code>。</td></tr>
 </table>
@@ -152,6 +152,8 @@
   <tr><td>输出格式</td><td>7z / ZIP（默认）/ 自解压，可多选；多选会一次产出多个包，共用同一密码。</td></tr>
   <tr><td>密码形态</td><td>短 UUID（22 位，默认）/ 32 位十六进制 / 标准 UUID / UUID + 32 位随机 / 大小写混合（32 位）。</td></tr>
   <tr><td>输出目录</td><td>留空 = 与原文件同目录；不会覆盖同名文件，自动加「 (2)」。</td></tr>
+  <tr><td>输出文件名</td><td>可选；留空则与原文件同名（不含扩展名）。只影响输出，不改原文件。</td></tr>
+  <tr><td>右键菜单</td><td>显示注册状态，点「注册」/「移除」即可，不需要命令行。</td></tr>
   <tr><td>本次密码</td><td>显示当前密码，可「复制」「换一个」。换一个会同步到队列里还没开始的任务。</td></tr>
   <tr><td>队列</td><td>每行一个任务，显示名称、大小、格式、进度；失败时进度条变红，鼠标悬停可看原因。</td></tr>
   <tr><td>开始 / 取消</td><td>「拖入后自动开始」默认勾选；取消会终止当前任务并清空未开始的任务。</td></tr>
@@ -161,6 +163,7 @@
 <ol>
   <li><b>拖入</b>要加密的文件或文件夹（可多选、可混合）。</li>
   <li><b>选格式</b>：默认 ZIP（兼容性最好）；需要隐藏文件名选 7z；对方没装 7-Zip 就选自解压。</li>
+  <li><b>可选改名</b>：在「输出文件名」里填写，留空就用原文件名。</li>
   <li><b>等完成</b>：队列走完会弹出「加密完成」窗口，列出每个包的名字、密码、TXT 路径，可一键复制密码或打开目录。</li>
 </ol>
 
@@ -231,19 +234,22 @@ SHA-256   : 9c1f...
 <div class="warn"><b>记录里是明文密码。</b>它只存在本机，但任何能读你用户目录的程序都能看到。公用电脑上建议用完点「清空」。</div>
 
 <h2>8. 右键菜单</h2>
-<h3>Windows</h3>
+<p>在窗口「右键菜单」一行点「注册」即可；也可以命令行：</p>
 <pre><code>SealBoxCLI\SealBoxCLI.exe --install-menu
-SealBoxCLI\SealBoxCLI.exe --uninstall-menu</code></pre>
+SealBoxCLI\SealBoxCLI.exe --uninstall-menu
+SealBoxCLI\SealBoxCLI.exe --menu-status</code></pre>
 <ul>
   <li>注册在 <b>当前用户</b>（HKCU），不需要管理员。</li>
-  <li>文件、文件夹、文件夹空白处三处入口，子菜单可选 7z / ZIP / 自解压 / 三种都要。</li>
+  <li>文件、文件夹、文件夹空白处各一个入口：右键 →「SealBox 加密 / 解压…」，打开窗口后选格式。</li>
+  <li>为什么没有格式子菜单：级联菜单在部分 Win10 版本不显示，且容易出现重复项；单层入口在 Win10 / Win11 行为一致。</li>
   <li>多选：资源管理器「发送到 → SealBox 加密」，会把全部选中项作为一次任务。</li>
-  <li>移动或重命名程序目录后，重新执行一次 <code>--install-menu</code>。</li>
+  <li>移动或重命名程序目录后，重新点一次「注册」。</li>
+  <li>不显示时先跑 <code>--menu-status</code> 自检，再注销/重登。</li>
 </ul>
 <h3>macOS / Linux</h3>
 <ul>
-  <li>macOS：<code>SealBoxCLI --install-menu</code> 安装 Finder 快速操作（实验性，未实机验证）。</li>
-  <li>Linux：<code>SealBoxCLI --install-menu</code> 写入 Nautilus / Nemo / Caja 的脚本目录。</li>
+  <li>macOS：窗口点「注册」或 <code>SealBoxCLI --install-menu</code> 安装 Finder 快速操作（实验性，未实机验证）。</li>
+  <li>Linux：同样方式写入 Nautilus / Nemo / Caja 的脚本目录。</li>
 </ul>
 
 <h2>9. 系统托盘与开机自启动</h2>
@@ -277,7 +283,7 @@ SealBoxCLI --autostart disable</code></pre>
 <p>整个目录要一起保留，<code>_internal</code> 不能删。若从压缩包只拖出了 exe，请重新完整解压。</p>
 
 <h3>Windows 右键菜单不出现</h3>
-<p>先确认已执行 <code>--install-menu</code>；资源管理器可按 <span class="kbd">F5</span> 刷新。移动过程序目录就重新注册。</p>
+<p>窗口里点「注册」；仍不显示就执行 <code>--uninstall-menu</code> 再 <code>--install-menu</code>，或注销重登。Win10 可用 <code>--menu-status</code> 查看每个键和启动器路径。</p>
 
 <h3>提示「密码错误或归档已损坏」</h3>
 <p>先核对 TXT 与压缩包是否配对（同名）；再确认输入法没有把全角字符带进去。7z 一旦密码错误无法恢复。</p>

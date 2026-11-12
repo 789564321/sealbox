@@ -253,6 +253,7 @@ class MainWindow(QMainWindow):
         self._build_tray()
         self._wire()
         self._init_autostart()
+        self.refresh_menu_status()
 
     # ---------- 界面 ----------
     def _section(self, text: str) -> QLabel:
@@ -362,6 +363,15 @@ class MainWindow(QMainWindow):
         row2.addWidget(btn_out)
         card_layout.addLayout(row2)
 
+        row_name = QHBoxLayout()
+        row_name.setSpacing(8)
+        row_name.addWidget(self._section("输出文件名"))
+        self.name_edit = QLineEdit()
+        self.name_edit.setPlaceholderText("留空：与原文件同名（不含扩展名）")
+        self.name_edit.setToolTip("自定义输出文件名，不含扩展名；多个任务同名时自动加 (2)")
+        row_name.addWidget(self.name_edit, 1)
+        card_layout.addLayout(row_name)
+
         row3 = QHBoxLayout()
         row3.setSpacing(8)
         row3.addWidget(self._section("本次密码"))
@@ -392,6 +402,21 @@ class MainWindow(QMainWindow):
             row4.addWidget(box)
         row4.addStretch(1)
         card_layout.addLayout(row4)
+
+        row_menu = QHBoxLayout()
+        row_menu.setSpacing(8)
+        row_menu.addWidget(self._section("右键菜单"))
+        self.menu_status_label = QLabel("检查中…")
+        self.menu_status_label.setObjectName("hint")
+        row_menu.addWidget(self.menu_status_label)
+        row_menu.addStretch(1)
+        self.btn_menu_install = QPushButton("注册")
+        self.btn_menu_install.setObjectName("ghost")
+        self.btn_menu_remove = QPushButton("移除")
+        self.btn_menu_remove.setObjectName("ghost")
+        row_menu.addWidget(self.btn_menu_install)
+        row_menu.addWidget(self.btn_menu_remove)
+        card_layout.addLayout(row_menu)
         layout.addWidget(card)
 
         self.table = QTableWidget(0, 4)
@@ -604,7 +629,10 @@ class MainWindow(QMainWindow):
         self.btn_toggle_log.clicked.connect(lambda: self.seal_log.setVisible(not self.seal_log.isVisible()))
         self.btn_copy_pw.clicked.connect(self.copy_pw)
         self.btn_regen.clicked.connect(self.regenerate_pw)
+        self.name_edit.textChanged.connect(self.on_name_changed)
         self.chk_autostart.toggled.connect(self.toggle_autostart)
+        self.btn_menu_install.clicked.connect(self.install_context_menu)
+        self.btn_menu_remove.clicked.connect(self.remove_context_menu)
         self.btn_extract.clicked.connect(lambda: self.run_extract(False))
         self.btn_verify.clicked.connect(lambda: self.run_extract(True))
         self.btn_ex_open.clicked.connect(self.open_extract_dir)
@@ -638,6 +666,7 @@ class MainWindow(QMainWindow):
         return job.JobOptions(
             formats=formats,
             output_dir=Path(out) if out else None,
+            base_name=self.name_edit.text().strip() or None,
             pwd_style=self.pwd_style_combo.currentData(),
             write_pwd_file=self.chk_txt.isChecked(),
             verify=self.chk_verify.isChecked(),
@@ -795,6 +824,44 @@ class MainWindow(QMainWindow):
             dialog = ResultDialog(finished, self)
             dialog.exec()
 
+    # ---------- 右键菜单 ----------
+    def refresh_menu_status(self) -> None:
+        try:
+            from ..platform_ import backend
+
+            installed = bool(backend().status().get("installed"))
+        except Exception as exc:
+            self.menu_status_label.setText(f"不可用：{exc}")
+            return
+        if sys.platform == "win32":
+            self.menu_status_label.setText("已注册" if installed else "未注册")
+        elif sys.platform == "darwin":
+            self.menu_status_label.setText("快速操作已安装" if installed else "快速操作未安装")
+        else:
+            self.menu_status_label.setText("文件管理器脚本已安装" if installed else "未安装")
+
+    def install_context_menu(self) -> None:
+        try:
+            from ..platform_ import backend
+
+            messages = backend().install_menu()
+        except Exception as exc:
+            QMessageBox.warning(self, "右键菜单", f"注册失败：{exc}")
+        else:
+            QMessageBox.information(self, "右键菜单", "\n".join(messages))
+        self.refresh_menu_status()
+
+    def remove_context_menu(self) -> None:
+        try:
+            from ..platform_ import backend
+
+            messages = backend().uninstall_menu()
+        except Exception as exc:
+            QMessageBox.warning(self, "右键菜单", f"移除失败：{exc}")
+        else:
+            QMessageBox.information(self, "右键菜单", "\n".join(messages))
+        self.refresh_menu_status()
+
     # ---------- 开机自启动 ----------
     def _init_autostart(self) -> None:
         try:
@@ -817,6 +884,12 @@ class MainWindow(QMainWindow):
         self.seal_status.setText(
             "已开启开机自启动（登录后静默驻留托盘）" if checked else "已关闭开机自启动"
         )
+
+    def on_name_changed(self, text: str) -> None:
+        base = text.strip() or None
+        for task in self.tasks:
+            if task.state == job.STATE_PENDING:
+                task.options.base_name = base
 
     # ---------- 密码 ----------
     def copy_pw(self) -> None:

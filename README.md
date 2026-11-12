@@ -3,6 +3,8 @@
 用一次性 UUID 密码把文件 / 文件夹加密成 **7z / ZIP / 自解压程序**，同时生成一份写明密码与校验信息的 TXT。
 带窗口、拖拽、系统托盘、开机自启动、右键菜单和压缩记录。
 
+> 📘 图文版使用说明书：[docs/manual.pdf](docs/manual.pdf) · [HTML 源](docs/manual.html)
+
 ```
 文件 / 文件夹 ──拖入──▶ 一次性 UUID 密码 ──▶ report.7z  +  report.密码.txt
                                         ├─▶ report.zip（AES-256）

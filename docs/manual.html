@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>SealBox 封印盒 · 使用说明书</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+    color: #1f2937; font-size: 10.5pt; line-height: 1.75; margin: 0;
+  }
+  h1, h2, h3 { color: #0f172a; line-height: 1.3; }
+  h2 { font-size: 17pt; margin: 22pt 0 8pt; padding-bottom: 4pt; border-bottom: 2px solid #dbeafe; page-break-after: avoid; }
+  h3 { font-size: 12.5pt; margin: 14pt 0 6pt; page-break-after: avoid; }
+  p { margin: 6pt 0; }
+  ul, ol { margin: 6pt 0 6pt 18pt; padding: 0; }
+  li { margin: 3pt 0; }
+  code {
+    font-family: Consolas, "Cascadia Mono", monospace; font-size: 9.5pt;
+    background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 1px 4px;
+  }
+  pre {
+    background: #0f172a; color: #e2e8f0; border-radius: 8px; padding: 9pt 11pt;
+    font-family: Consolas, "Cascadia Mono", monospace; font-size: 9pt; line-height: 1.55;
+    white-space: pre-wrap; word-break: break-all;
+  }
+  pre code { background: none; border: none; color: inherit; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9.5pt; page-break-inside: avoid; }
+  th, td { border: 1px solid #e2e8f0; padding: 5pt 7pt; text-align: left; vertical-align: top; }
+  th { background: #eff6ff; color: #1e3a8a; font-weight: 600; }
+  tr:nth-child(even) td { background: #fbfdff; }
+  .cover {
+    height: 250mm; display: flex; flex-direction: column; justify-content: center;
+    page-break-after: always; text-align: left;
+  }
+  .cover .badge {
+    display: inline-block; background: #2563eb; color: #fff; border-radius: 10px;
+    padding: 3pt 10pt; font-size: 9pt; width: fit-content; margin-bottom: 14pt;
+  }
+  .cover h1 { font-size: 34pt; margin: 0 0 6pt; letter-spacing: 1pt; }
+  .cover .sub { font-size: 14pt; color: #2563eb; margin-bottom: 22pt; }
+  .cover .meta { color: #64748b; font-size: 10pt; line-height: 2; }
+  .cover .rule { width: 46mm; height: 4pt; background: #2563eb; border-radius: 2pt; margin: 16pt 0; }
+  .note, .warn {
+    border-radius: 8px; padding: 8pt 11pt; margin: 8pt 0; font-size: 9.5pt; page-break-inside: avoid;
+  }
+  .note { background: #eff6ff; border-left: 4px solid #2563eb; }
+  .warn { background: #fff7ed; border-left: 4px solid #f97316; }
+  .note b, .warn b { color: #1e3a8a; }
+  .warn b { color: #9a3412; }
+  figure { margin: 10pt 0; text-align: center; page-break-inside: avoid; }
+  figure img { max-width: 150mm; width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; }
+  figcaption { color: #64748b; font-size: 8.5pt; margin-top: 4pt; }
+  .toc { columns: 2; column-gap: 14mm; font-size: 10pt; }
+  .toc div { margin: 2pt 0; break-inside: avoid; }
+  .kbd {
+    font-family: Consolas, monospace; border: 1px solid #cbd5e1; border-bottom-width: 2px;
+    border-radius: 4px; padding: 0 4px; background: #f8fafc; font-size: 9pt;
+  }
+  .small { font-size: 9pt; color: #64748b; }
+  .pagebreak { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="badge">Windows · macOS · Linux</div>
+  <h1>SealBox 封印盒</h1>
+  <div class="sub">一次性 UUID 密码加密 · 使用说明书</div>
+  <div class="rule"></div>
+  <p style="font-size:11pt;color:#334155;max-width:130mm;">
+    把文件或文件夹拖进窗口，生成一个一次性的 UUID 密码，压缩包与密码 TXT 同时产出：
+    <b>7z（内容与文件名同时加密）</b>、<b>ZIP（AES-256）</b>、<b>自解压程序</b>。
+  </p>
+  <div class="meta">
+    版本：0.1.0 &nbsp;|&nbsp; 文档日期：2026-11-12<br>
+    适用：Windows 10/11 · macOS（Apple Silicon）· Linux x64<br>
+    产物：目录版（onedir），内置 7-Zip，目标机器无需另装
+  </div>
+</section>
+
+<h2>目录</h2>
+<div class="toc">
+  <div>1. 它能做什么</div>
+  <div>2. 安装与启动（三平台）</div>
+  <div>3. 界面导览</div>
+  <div>4. 加密文件：三步完成</div>
+  <div>5. 密码与密码 TXT</div>
+  <div>6. 解压与校验</div>
+  <div>7. 压缩记录</div>
+  <div>8. 右键菜单</div>
+  <div>9. 系统托盘与开机自启动</div>
+  <div>10. 命令行用法</div>
+  <div>11. 常见问题</div>
+  <div>12. 安全须知</div>
+  <div>13. 附录：文件清单与平台差异</div>
+</div>
+
+<h2>1. 它能做什么</h2>
+<table>
+  <tr><th style="width:26%">能力</th><th>说明</th></tr>
+  <tr><td>一次性密码</td><td>每次任务用 uuid4 生成，默认 32 位十六进制（约 122 bit 熵），不复用。</td></tr>
+  <tr><td>三种加密包</td><td><b>7z</b>：AES-256 + 头加密，连文件名都看不到；<b>ZIP</b>：AES-256，但文件名可见；<b>自解压</b>：Windows 出 exe，macOS/Linux 出脚本。</td></tr>
+  <tr><td>密码 TXT</td><td>自动写出 <code>&lt;名称&gt;.密码.txt</code>，含密码、格式、大小、SHA-256、解压命令。</td></tr>
+  <tr><td>拖拽即用</td><td>文件/文件夹拖进窗口；也可以直接拖到程序图标上，程序会打开并预置任务。</td></tr>
+  <tr><td>压缩记录</td><td>记录原名 → 包名、密码、大小、SHA-256，可复制、打开位置、导出 CSV。</td></tr>
+  <tr><td>右键菜单</td><td>Windows 文件/文件夹/空白处；macOS 快速操作；Linux 文件管理器脚本。</td></tr>
+  <tr><td>托盘与自启</td><td>关闭最小化到托盘；开机自启动后静默驻留托盘。</td></tr>
+  <tr><td>命令行</td><td><code>--seal</code> / <code>--extract</code> / <code>--verify</code>，可脚本化、可 <code>--json</code>。</td></tr>
+</table>
+
+<div class="note"><b>一句提醒：</b>密码 TXT 和加密包放在同一目录，等于没有加密。请把 TXT 通过另一条渠道（短信、电话、另一个聊天窗口）发给对方。</div>
+
+<h2>2. 安装与启动（三平台）</h2>
+
+<h3>Windows 10 / 11</h3>
+<ol>
+  <li>解压 <code>SealBox-win64.zip</code>，得到两个目录：<code>SealBox\</code>（窗口版）与 <code>SealBoxCLI\</code>（命令行版）。</li>
+  <li>双击 <code>SealBox\SealBox.exe</code>。目录里的 <code>_internal</code> 是运行库，<b>不能删、不能单独移动</b>，要搬就整个文件夹一起搬。</li>
+  <li>首次运行若被 SmartScreen 拦，点「更多信息 → 仍要运行」（程序未做代码签名，属正常）。</li>
+</ol>
+
+<h3>macOS（Apple Silicon）</h3>
+<ol>
+  <li>解压 <code>SealBox-macos-arm64.zip</code>，得到 <code>SealBox.app</code> 与 <code>SealBoxCLI/</code>。</li>
+  <li>首次打开：在 Finder 里 <b>右键 → 打开</b>，或终端执行：
+    <pre><code>xattr -dr com.apple.quarantine SealBox.app</code></pre>
+  </li>
+  <li>若提示「无法验证开发者」，去「系统设置 → 隐私与安全性」点「仍要打开」。</li>
+</ol>
+
+<h3>Linux x64</h3>
+<ol>
+  <li>解压 <code>SealBox-linux-x64.zip</code>，得到 <code>SealBox/</code> 与 <code>SealBoxCLI/</code>。</li>
+  <li>赋予执行权限（部分解压工具会丢权限）：
+    <pre><code>chmod +x SealBox/SealBox SealBoxCLI/SealBoxCLI
+./SealBox/SealBox</code></pre>
+  </li>
+  <li>缺少图形环境时用命令行版：<code>./SealBoxCLI/SealBoxCLI --check</code>。</li>
+</ol>
+
+<h2>3. 界面导览</h2>
+<figure>
+  <img src="screenshot-onedir.png" alt="主界面">
+  <figcaption>主界面：顶部三个页签（加密 / 解压 / 记录），中间是拖拽区和选项卡片，下面是任务队列。</figcaption>
+</figure>
+
+<table>
+  <tr><th style="width:24%">区域</th><th>说明</th></tr>
+  <tr><td>拖拽区</td><td>文件、文件夹都可以拖进来；点一下也可以打开选择框。拖到程序图标上同样有效。</td></tr>
+  <tr><td>输出格式</td><td>7z / ZIP / 自解压，可多选；多选会一次产出多个包，共用同一密码。</td></tr>
+  <tr><td>密码形态</td><td>32 位十六进制（默认）/ 标准 UUID / UUID + 32 位随机。</td></tr>
+  <tr><td>输出目录</td><td>留空 = 与原文件同目录；不会覆盖同名文件，自动加「 (2)」。</td></tr>
+  <tr><td>本次密码</td><td>显示当前密码，可「复制」「换一个」。换一个会同步到队列里还没开始的任务。</td></tr>
+  <tr><td>队列</td><td>每行一个任务，显示名称、大小、格式、进度；失败时进度条变红，鼠标悬停可看原因。</td></tr>
+  <tr><td>开始 / 取消</td><td>「拖入后自动开始」默认勾选；取消会终止当前任务并清空未开始的任务。</td></tr>
+</table>
+
+<h2>4. 加密文件：三步完成</h2>
+<ol>
+  <li><b>拖入</b>要加密的文件或文件夹（可多选、可混合）。</li>
+  <li><b>选格式</b>：默认 7z；需要兼容老解压软件选 ZIP；对方没装 7-Zip 就选自解压。</li>
+  <li><b>等完成</b>：队列走完会弹出「加密完成」窗口，列出每个包的名字、密码、TXT 路径，可一键复制密码或打开目录。</li>
+</ol>
+
+<figure>
+  <img src="screenshot-result.png" alt="完成弹窗">
+  <figcaption>完成弹窗：原名 → 包名、密码、密码 TXT 路径，右下角「完成」关闭。</figcaption>
+</figure>
+
+<h3>输出命名规则</h3>
+<ul>
+  <li>单个文件：<code>报告.docx</code> → <code>报告.7z</code> + <code>报告.密码.txt</code>。</li>
+  <li>单个文件夹：<code>资料\</code> → <code>资料.7z</code>（包内保留 <code>资料/</code> 这一层）。</li>
+  <li>多个文件：<code>a.txt</code>、<code>b.txt</code> → <code>a.7z</code>，包内是这两个文件。</li>
+  <li>自解压：Windows <code>.exe</code>；macOS <code>.command</code>；Linux <code>.run</code>。</li>
+</ul>
+
+<div class="note"><b>ZIP 的限制：</b>ZIP 规范不支持加密文件名，任何人拿到 ZIP 都能看到里面有哪些文件。需要连文件名一起藏起来，请用 7z。</div>
+
+<h2>5. 密码与密码 TXT</h2>
+<p>TXT 内容示例：</p>
+<pre><code>========================================
+ SealBox 加密包信息
+========================================
+生成时间  : 2026-11-12 09:40:12 +0800
+密码      : 3f2a9c4e8b1d47f6a05c2e9d7b3f1a8c
+密码形态  : 32 位十六进制（约 122 bit 熵）
+----------------------------------------
+加密包    : 报告.7z
+格式      : 7z（AES-256，文件名加密：是）
+大小      : 1,234,567 字节
+SHA-256   : 9c1f...
+解压      : 7z x -p"密码" "报告.7z"
+----------------------------------------
+安全提示  : 密码与压缩包请分渠道发送；放在同一目录等于没有加密。
+========================================</code></pre>
+<ul>
+  <li>默认写入；界面里取消勾选「同时写密码 TXT」就只显示密码，不落盘。</li>
+  <li>macOS / Linux 下 TXT 权限为 <code>600</code>（仅本人可读）。</li>
+  <li>UUID 密码足够防暴力破解；特别重要的数据建议选「UUID + 32 位随机」。</li>
+</ul>
+
+<h2>6. 解压与校验</h2>
+<figure>
+  <img src="screenshot-extract.png" alt="解压页">
+  <figcaption>解压页：拖入压缩包后自动切到这里，并尝试读取同目录的 <code>&lt;名称&gt;.密码.txt</code>。</figcaption>
+</figure>
+<ol>
+  <li>把 <code>.7z</code> / <code>.zip</code> / 自解压文件拖进「解压」页，或点「选择」。</li>
+  <li>程序会自动找到同名密码 TXT 并填入密码；找不到就手动输入，或点「从 TXT 读取」。</li>
+  <li>「解压」输出到指定目录；「仅校验」只验证密码与完整性，不写文件。</li>
+  <li>点「显示」可临时查看密码明文。</li>
+</ol>
+
+<h2>7. 压缩记录</h2>
+<ul>
+  <li>顶部「记录」页签：时间、原文件、加密包、密码、大小。</li>
+  <li>选中行可「复制密码」「打开位置」；双击行也能打开位置。</li>
+  <li>「导出 CSV」适合做批量核对；「清空」会删除本机全部记录（不可恢复）。</li>
+</ul>
+<table>
+  <tr><th style="width:22%">平台</th><th>记录文件位置</th></tr>
+  <tr><td>Windows</td><td><code>%APPDATA%\SealBox\history.jsonl</code></td></tr>
+  <tr><td>macOS / Linux</td><td><code>~/.sealbox/history.jsonl</code></td></tr>
+</table>
+<div class="warn"><b>记录里是明文密码。</b>它只存在本机，但任何能读你用户目录的程序都能看到。公用电脑上建议用完点「清空」。</div>
+
+<h2>8. 右键菜单</h2>
+<h3>Windows</h3>
+<pre><code>SealBoxCLI\SealBoxCLI.exe --install-menu
+SealBoxCLI\SealBoxCLI.exe --uninstall-menu</code></pre>
+<ul>
+  <li>注册在 <b>当前用户</b>（HKCU），不需要管理员。</li>
+  <li>文件、文件夹、文件夹空白处三处入口，子菜单可选 7z / ZIP / 自解压 / 三种都要。</li>
+  <li>多选：资源管理器「发送到 → SealBox 加密」，会把全部选中项作为一次任务。</li>
+  <li>移动或重命名程序目录后，重新执行一次 <code>--install-menu</code>。</li>
+</ul>
+<h3>macOS / Linux</h3>
+<ul>
+  <li>macOS：<code>SealBoxCLI --install-menu</code> 安装 Finder 快速操作（实验性，未实机验证）。</li>
+  <li>Linux：<code>SealBoxCLI --install-menu</code> 写入 Nautilus / Nemo / Caja 的脚本目录。</li>
+</ul>
+
+<h2>9. 系统托盘与开机自启动</h2>
+<ul>
+  <li>关闭窗口默认最小化到托盘（可在主界面取消勾选「关闭时最小化到托盘」）。</li>
+  <li>托盘图标右键：显示主窗口 / 退出 SealBox。</li>
+  <li>「开机自启动」勾选后：登录时以 <code>--tray</code> 静默启动，只驻留托盘。也可以命令行控制：
+    <pre><code>SealBoxCLI --autostart enable
+SealBoxCLI --autostart status
+SealBoxCLI --autostart disable</code></pre>
+  </li>
+  <li>实现方式：Windows 登录项 / macOS LaunchAgent / Linux ~/.config/autostart。</li>
+</ul>
+
+<h2>10. 命令行用法</h2>
+<table>
+  <tr><th style="width:42%">命令</th><th>作用</th></tr>
+  <tr><td><code>SealBoxCLI --check</code></td><td>检查 7-Zip、Qt 与自解压模块是否就绪</td></tr>
+  <tr><td><code>SealBoxCLI --seal --cli 报告.docx</code></td><td>加密为 7z（默认）</td></tr>
+  <tr><td><code>SealBoxCLI --seal --cli --format all 资料\</code></td><td>同时出 7z + ZIP + 自解压</td></tr>
+  <tr><td><code>SealBoxCLI --seal --cli --out D:\包 文件</code></td><td>指定输出目录</td></tr>
+  <tr><td><code>SealBoxCLI --seal --cli --pwd 自定义密码 文件</code></td><td>使用指定密码（不自动生成）</td></tr>
+  <tr><td><code>SealBoxCLI --extract --cli 备份.7z --out 输出\</code></td><td>解压（自动读同目录密码 TXT）</td></tr>
+  <tr><td><code>SealBoxCLI --verify --cli 备份.7z</code></td><td>只校验，不解压</td></tr>
+  <tr><td><code>SealBoxCLI --seal --cli --json 文件</code></td><td>输出机器可读 JSON</td></tr>
+</table>
+<div class="note"><b>为什么分成两个 exe：</b>窗口版没有控制台，终端里看不到输出；需要脚本/查看进度时请用 <code>SealBoxCLI</code>。</div>
+
+<h2>11. 常见问题</h2>
+<h3>双击没反应，或提示缺少 DLL</h3>
+<p>整个目录要一起保留，<code>_internal</code> 不能删。若从压缩包只拖出了 exe，请重新完整解压。</p>
+
+<h3>Windows 右键菜单不出现</h3>
+<p>先确认已执行 <code>--install-menu</code>；资源管理器可按 <span class="kbd">F5</span> 刷新。移动过程序目录就重新注册。</p>
+
+<h3>提示「密码错误或归档已损坏」</h3>
+<p>先核对 TXT 与压缩包是否配对（同名）；再确认输入法没有把全角字符带进去。7z 一旦密码错误无法恢复。</p>
+
+<h3>ZIP 里能看到文件名</h3>
+<p>这是 ZIP 格式本身的限制，不是程序问题。需要隐藏文件名请用 7z。</p>
+
+<h3>macOS 提示「无法打开，因为无法验证开发者」</h3>
+<pre><code>xattr -dr com.apple.quarantine SealBox.app</code></pre>
+<p>或 Finder 右键 →「打开」。首次之后不再提示。</p>
+
+<h3>自解压 exe 被 SmartScreen / 杀软拦截</h3>
+<p>exe 未做代码签名，属正常现象。介意的话改用 7z 包，让对方用 7-Zip 打开。</p>
+
+<h3>大文件很慢</h3>
+<p>默认压缩级别 9。命令行走 <code>--level 5</code> 可明显加速；SSD 与文件类型也会影响速度。</p>
+
+<h3>密码 TXT 丢了还能打开吗？</h3>
+<p>不能。7z / ZIP 的 AES-256 没有后门，只能靠密码或 TXT 里的记录。</p>
+
+<h2>12. 安全须知</h2>
+<div class="warn">
+  <b>请务必读完这一页。</b>
+</div>
+<ol>
+  <li><b>TXT 与包同目录 = 没加密。</b>务必分渠道传递；界面可关闭 TXT 写入。</li>
+  <li><b>ZIP 只加密内容，不加密文件名。</b>敏感文件名请用 7z。</li>
+  <li><b>压缩记录含明文密码</b>，只存本机；公用电脑用完清空。</li>
+  <li><b>密码走命令行参数</b>（7z 的限制），本机同用户进程理论上可读；本工具不写日志。</li>
+  <li><b>没有找回机制。</b>丢失密码 = 永久丢失数据，请先小文件试跑。</li>
+  <li>加密强度依赖 7-Zip 的 AES-256 与密钥派生；请使用本工具内置的 7-Zip 版本，不要随意替换。</li>
+</ol>
+
+<h2>13. 附录：文件清单与平台差异</h2>
+<table>
+  <tr><th style="width:26%">平台</th><th>解压后结构</th><th>主程序</th></tr>
+  <tr><td>Windows</td><td><code>SealBox\</code> + <code>SealBoxCLI\</code></td><td><code>SealBox\SealBox.exe</code></td></tr>
+  <tr><td>macOS</td><td><code>SealBox.app</code> + <code>SealBoxCLI\</code></td><td><code>SealBox.app</code></td></tr>
+  <tr><td>Linux</td><td><code>SealBox\</code> + <code>SealBoxCLI\</code></td><td><code>SealBox/SealBox</code></td></tr>
+</table>
+<table>
+  <tr><th style="width:30%">差异点</th><th>说明</th></tr>
+  <tr><td>自解压形式</td><td>Windows 为 <code>.exe</code>（7z.sfx）；macOS 为 <code>.command</code>；Linux 为 <code>.run</code>，都需要系统有 7zz 或 7z。</td></tr>
+  <tr><td>右键菜单</td><td>Windows 注册表；macOS Finder 快速操作；Linux 文件管理器脚本。</td></tr>
+  <tr><td>开机自启</td><td>登录项 / LaunchAgent / autostart 三种实现。</td></tr>
+  <tr><td>签名</td><td>Windows 与 macOS 均未做商业签名，首次运行有安全提示。</td></tr>
+</table>
+
+<p class="small" style="margin-top:18pt;">
+  SealBox 封印盒 0.1.0 · 内置 7-Zip 24.09（LGPL）· 项目地址 https://github.com/789564321/sealbox
+</p>
+
+</body>
+</html>

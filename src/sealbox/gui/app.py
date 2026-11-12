@@ -332,7 +332,13 @@ class MainWindow(QMainWindow):
         for key, label in (("7z", "7z"), ("zip", "ZIP"), ("sfx", "自解压")):
             box = QCheckBox(label)
             box.setObjectName("chip")
-            box.setChecked(key == "7z")
+            box.setChecked(key == "zip")
+            if key == "7z":
+                box.setToolTip("AES-256 + 头加密：内容与文件名都看不到，适合敏感数据")
+            elif key == "zip":
+                box.setToolTip("AES-256 加密内容；兼容性最好，但文件名不加密")
+            else:
+                box.setToolTip("生成自解压程序，对方无需安装 7-Zip")
             self.format_checks[key] = box
             row1.addWidget(box)
         row1.addSpacing(14)
@@ -1074,7 +1080,7 @@ def run_gui(
     action="auto",
     formats=("7z",),
     out_dir=None,
-    pwd_style="hex32",
+    pwd_style="short22",
     pwd_text=None,
     tray_only: bool = False,
 ) -> int:

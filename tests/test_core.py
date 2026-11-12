@@ -31,6 +31,19 @@ HAS_7Z = sevenzip_available()
 
 
 class PasswordTests(unittest.TestCase):
+    def test_default_is_short22(self) -> None:
+        value = password.generate()
+        self.assertEqual(len(value), 22)
+        self.assertTrue(value.isalnum())
+
+    def test_short22_charset(self) -> None:
+        allowed = set(password._SHORT_ALPHABET)
+        for _ in range(50):
+            value = password.generate("short22")
+            self.assertEqual(len(value), 22)
+            self.assertTrue(set(value) <= allowed)
+            self.assertFalse(set(value) & set("0OIl"))
+
     def test_hex32_shape(self) -> None:
         value = password.generate("hex32")
         self.assertEqual(len(value), 32)
@@ -45,6 +58,14 @@ class PasswordTests(unittest.TestCase):
     def test_uuid_rand_shape(self) -> None:
         self.assertEqual(len(password.generate("uuid+rand")), 64)
 
+    def test_mixed62_shape(self) -> None:
+        value = password.generate("mixed62")
+        self.assertEqual(len(value), 32)
+        self.assertTrue(value.isalnum())
+        self.assertTrue(any(c.islower() for c in value))
+        self.assertTrue(any(c.isupper() for c in value))
+        self.assertTrue(any(c.isdigit() for c in value))
+
     def test_unique_many(self) -> None:
         values = {password.generate("hex32") for _ in range(2000)}
         self.assertEqual(len(values), 2000)
@@ -55,6 +76,9 @@ class PasswordTests(unittest.TestCase):
 
 
 class CommandTests(unittest.TestCase):
+    def test_default_format_is_zip(self) -> None:
+        self.assertEqual(job.JobOptions().formats, ("zip",))
+
     def test_7z_args(self) -> None:
         args = add_args("7z", Path("out.7z"), [Path("a.txt")], "abc123")
         self.assertIn("-t7z", args)

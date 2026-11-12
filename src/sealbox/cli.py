@@ -25,7 +25,7 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=(
             "示例：\n"
             "  sealbox 报告.docx 资料/           打开窗口并预置这些输入\n"
-            "  sealbox --seal --cli 报告.docx    直接命令行加密为 7z\n"
+            "  sealbox --seal --cli 报告.docx    直接命令行加密为 ZIP（默认）\n"
             "  sealbox --seal --cli --format zip,sfx 资料/\n"
             "  sealbox --extract --cli 备份.7z --pwd <密码>\n"
             "  sealbox --install-menu           注册右键菜单\n"
@@ -35,7 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--seal", action="store_true", help="加密模式")
     parser.add_argument("--extract", action="store_true", help="解压模式")
     parser.add_argument("--verify", action="store_true", help="仅校验归档")
-    parser.add_argument("--format", default="7z", help="7z / zip / sfx，逗号分隔；all = 三种")
+    parser.add_argument("--format", default="zip", help="7z / zip / sfx，逗号分隔；all = 三种")
     parser.add_argument("--out", help="输出目录")
     parser.add_argument("--name", help="输出文件名（不含扩展名）")
     parser.add_argument("--pwd", help="指定密码；省略则自动生成")
@@ -44,7 +44,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="auto",
         help="auto（默认，写 <名称>.密码.txt）/ none（不写）/ 自定义路径",
     )
-    parser.add_argument("--pwd-style", default="hex32", choices=list(password.STYLES))
+    parser.add_argument("--pwd-style", default="short22", choices=list(password.STYLES))
     parser.add_argument("--sfx-target", default="auto", choices=("auto", "windows", "unix"))
     parser.add_argument("--sfx-console", action="store_true", help="Windows 自解压用控制台版")
     parser.add_argument("--level", type=int, default=9, help="压缩级别 0-9，默认 9")
@@ -68,7 +68,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def _parse_formats(spec: str) -> tuple[str, ...]:
-    text = (spec or "7z").strip().lower()
+    text = (spec or "zip").strip().lower()
     if text == "all":
         return job.FORMATS
     formats: list[str] = []
@@ -80,7 +80,7 @@ def _parse_formats(spec: str) -> tuple[str, ...]:
             raise ValueError(f"未知格式：{item}（可选 7z / zip / sfx / all）")
         if item not in formats:
             formats.append(item)
-    return tuple(formats) or ("7z",)
+    return tuple(formats) or ("zip",)
 
 
 def _action(args: argparse.Namespace) -> str:
@@ -144,7 +144,7 @@ def _safe_formats(spec: str) -> tuple[str, ...]:
     try:
         return _parse_formats(spec)
     except ValueError:
-        return ("7z",)
+        return ("zip",)
 
 
 def _cli_seal(args: argparse.Namespace, paths: list[str]) -> int:

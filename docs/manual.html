@@ -100,7 +100,7 @@
 <h2>1. 它能做什么</h2>
 <table>
   <tr><th style="width:26%">能力</th><th>说明</th></tr>
-  <tr><td>一次性密码</td><td>每次任务用 uuid4 生成，默认 32 位十六进制（约 122 bit 熵），不复用。</td></tr>
+  <tr><td>一次性密码</td><td>每次任务用 uuid4 生成，默认短 UUID（22 位、大小写混合、约 122 bit 熵），不复用；也可选 32 位十六进制等形态。</td></tr>
   <tr><td>三种加密包</td><td><b>7z</b>：AES-256 + 头加密，连文件名都看不到；<b>ZIP</b>：AES-256，但文件名可见；<b>自解压</b>：Windows 出 exe，macOS/Linux 出脚本。</td></tr>
   <tr><td>密码 TXT</td><td>自动写出 <code>&lt;名称&gt;.密码.txt</code>，含密码、格式、大小、SHA-256、解压命令。</td></tr>
   <tr><td>拖拽即用</td><td>文件/文件夹拖进窗口；也可以直接拖到程序图标上，程序会打开并预置任务。</td></tr>
@@ -149,8 +149,8 @@
 <table>
   <tr><th style="width:24%">区域</th><th>说明</th></tr>
   <tr><td>拖拽区</td><td>文件、文件夹都可以拖进来；点一下也可以打开选择框。拖到程序图标上同样有效。</td></tr>
-  <tr><td>输出格式</td><td>7z / ZIP / 自解压，可多选；多选会一次产出多个包，共用同一密码。</td></tr>
-  <tr><td>密码形态</td><td>32 位十六进制（默认）/ 标准 UUID / UUID + 32 位随机。</td></tr>
+  <tr><td>输出格式</td><td>7z / ZIP（默认）/ 自解压，可多选；多选会一次产出多个包，共用同一密码。</td></tr>
+  <tr><td>密码形态</td><td>短 UUID（22 位，默认）/ 32 位十六进制 / 标准 UUID / UUID + 32 位随机 / 大小写混合（32 位）。</td></tr>
   <tr><td>输出目录</td><td>留空 = 与原文件同目录；不会覆盖同名文件，自动加「 (2)」。</td></tr>
   <tr><td>本次密码</td><td>显示当前密码，可「复制」「换一个」。换一个会同步到队列里还没开始的任务。</td></tr>
   <tr><td>队列</td><td>每行一个任务，显示名称、大小、格式、进度；失败时进度条变红，鼠标悬停可看原因。</td></tr>
@@ -160,7 +160,7 @@
 <h2>4. 加密文件：三步完成</h2>
 <ol>
   <li><b>拖入</b>要加密的文件或文件夹（可多选、可混合）。</li>
-  <li><b>选格式</b>：默认 7z；需要兼容老解压软件选 ZIP；对方没装 7-Zip 就选自解压。</li>
+  <li><b>选格式</b>：默认 ZIP（兼容性最好）；需要隐藏文件名选 7z；对方没装 7-Zip 就选自解压。</li>
   <li><b>等完成</b>：队列走完会弹出「加密完成」窗口，列出每个包的名字、密码、TXT 路径，可一键复制密码或打开目录。</li>
 </ol>
 
@@ -171,11 +171,13 @@
 
 <h3>输出命名规则</h3>
 <ul>
-  <li>单个文件：<code>报告.docx</code> → <code>报告.7z</code> + <code>报告.密码.txt</code>。</li>
-  <li>单个文件夹：<code>资料\</code> → <code>资料.7z</code>（包内保留 <code>资料/</code> 这一层）。</li>
-  <li>多个文件：<code>a.txt</code>、<code>b.txt</code> → <code>a.7z</code>，包内是这两个文件。</li>
+  <li>单个文件：<code>报告.docx</code> → <code>报告.zip</code> + <code>报告.密码.txt</code>。</li>
+  <li>单个文件夹：<code>资料\</code> → <code>资料.zip</code>（包内保留 <code>资料/</code> 这一层）。</li>
+  <li>多个文件：<code>a.txt</code>、<code>b.txt</code> → <code>a.zip</code>，包内是这两个文件。</li>
   <li>自解压：Windows <code>.exe</code>；macOS <code>.command</code>；Linux <code>.run</code>。</li>
 </ul>
+
+<div class="warn"><b>默认是 ZIP：</b>兼容性最好，但文件名不加密；如果文件名本身敏感，请改选 7z。</div>
 
 <div class="note"><b>ZIP 的限制：</b>ZIP 规范不支持加密文件名，任何人拿到 ZIP 都能看到里面有哪些文件。需要连文件名一起藏起来，请用 7z。</div>
 
@@ -185,18 +187,19 @@
  SealBox 加密包信息
 ========================================
 生成时间  : 2026-11-12 09:40:12 +0800
-密码      : 3f2a9c4e8b1d47f6a05c2e9d7b3f1a8c
-密码形态  : 32 位十六进制（约 122 bit 熵）
+密码      : 7Kq2mXv9Rt4Yb8Nc3Hd6Jf
+密码形态  : 短 UUID（22 位，约 122 bit 熵）
 ----------------------------------------
-加密包    : 报告.7z
-格式      : 7z（AES-256，文件名加密：是）
+加密包    : 报告.zip
+格式      : ZIP（AES-256，文件名不加密）
 大小      : 1,234,567 字节
 SHA-256   : 9c1f...
-解压      : 7z x -p"密码" "报告.7z"
+解压      : 7z x -p"密码" "报告.zip"
 ----------------------------------------
 安全提示  : 密码与压缩包请分渠道发送；放在同一目录等于没有加密。
 ========================================</code></pre>
 <ul>
+  <li>默认短 UUID：22 个字符，大小写 + 数字，去掉了 0/O/I/l 等易混字符，抄写不容易错。</li>
   <li>默认写入；界面里取消勾选「同时写密码 TXT」就只显示密码，不落盘。</li>
   <li>macOS / Linux 下 TXT 权限为 <code>600</code>（仅本人可读）。</li>
   <li>UUID 密码足够防暴力破解；特别重要的数据建议选「UUID + 32 位随机」。</li>
@@ -259,7 +262,7 @@ SealBoxCLI --autostart disable</code></pre>
 <table>
   <tr><th style="width:42%">命令</th><th>作用</th></tr>
   <tr><td><code>SealBoxCLI --check</code></td><td>检查 7-Zip、Qt 与自解压模块是否就绪</td></tr>
-  <tr><td><code>SealBoxCLI --seal --cli 报告.docx</code></td><td>加密为 7z（默认）</td></tr>
+  <tr><td><code>SealBoxCLI --seal --cli 报告.docx</code></td><td>加密为 ZIP（默认）</td></tr>
   <tr><td><code>SealBoxCLI --seal --cli --format all 资料\</code></td><td>同时出 7z + ZIP + 自解压</td></tr>
   <tr><td><code>SealBoxCLI --seal --cli --out D:\包 文件</code></td><td>指定输出目录</td></tr>
   <tr><td><code>SealBoxCLI --seal --cli --pwd 自定义密码 文件</code></td><td>使用指定密码（不自动生成）</td></tr>

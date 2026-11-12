@@ -6,8 +6,8 @@
 > 📘 图文版使用说明书：[docs/manual.pdf](docs/manual.pdf) · [HTML 源](docs/manual.html)
 
 ```
-文件 / 文件夹 ──拖入──▶ 一次性 UUID 密码 ──▶ report.7z  +  report.密码.txt
-                                        ├─▶ report.zip（AES-256）
+文件 / 文件夹 ──拖入──▶ 一次性 UUID 密码 ──▶ report.zip（AES-256，默认） + report.密码.txt
+                                        ├─▶ report.7z（文件名也加密）
                                         └─▶ report.exe / report.command（自解压）
 ```
 
@@ -15,9 +15,9 @@
 
 | 功能 | 说明 |
 |------|------|
-| 密码 | `uuid4` 生成，默认 32 位十六进制（122 bit）；也可选标准 UUID 或 UUID+32 位随机 |
+| 密码 | `uuid4` 生成，**默认 22 位短 UUID**（Base57，大小写混合，约 122 bit）；也可选 32 位十六进制、标准 UUID、UUID+32 位随机、32 位混合 |
 | 7z | AES-256 + `-mhe=on`，**文件名也加密**，没有密码连文件列表都读不出 |
-| ZIP | AES-256 加密内容；受 ZIP 规范限制，**文件名无法加密**，界面会提示 |
+| ZIP | **默认格式**；AES-256 加密内容；受 ZIP 规范限制，**文件名无法加密** |
 | 自解压 | Windows 生成 `.exe`（`7z.sfx`）；macOS/Linux 生成 `.command` / `.run`（shell 自解压） |
 | 密码 TXT | `<名称>.密码.txt`：密码、格式、大小、SHA-256、解压命令、安全提示 |
 | 压缩记录 | `history.jsonl`，可查看原名 → 包名、密码、大小，支持复制/导出 CSV |

@@ -43,10 +43,10 @@ STATE_CANCELLED = "cancelled"
 
 @dataclass
 class JobOptions:
-    formats: tuple[str, ...] = ("7z",)
+    formats: tuple[str, ...] = ("zip",)
     output_dir: Path | None = None
     base_name: str | None = None
-    pwd_style: str = "hex32"
+    pwd_style: str = "short22"
     write_pwd_file: bool = True
     verify: bool = True
     level: int = 9
@@ -261,7 +261,7 @@ def execute_task(
         base = _sanitize_base(task.options.base_name or default_base_name(inputs))
         pw = task.pw_text or pw_mod.generate(task.options.pwd_style)
         task.pw_text = pw
-        formats = [f for f in task.options.formats if f in FORMATS] or ["7z"]
+        formats = [f for f in task.options.formats if f in FORMATS] or ["zip"]
         total = len(formats)
         root, names = _archive_root_and_names(inputs)
         if root is None:

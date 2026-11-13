@@ -112,14 +112,19 @@ PyInstaller 不支持交叉编译：**在哪个系统构建，就得到哪个系
 packaging\build_win.cmd
 # 或
 python packaging\build.py
+
+# Windows 单文件安装器（需 NSIS 3；出 dist\SealBoxSetup-0.1.0.exe）
+powershell -ExecutionPolicy Bypass -File packaging\build_installer.ps1
 ```
 
 ```bash
-# macOS（出 dist/SealBox.app、dist/SealBoxCLI/、dist/SealBox-macos.zip）
+# macOS（出 dist/SealBox.app、dist/SealBoxCLI/、dist/SealBox-macos.zip、dist/SealBox-0.1.0-macos-arm64.dmg）
 bash packaging/build_mac.sh
+bash packaging/build_dmg.sh
 
-# Linux（出 dist/SealBox/、dist/SealBoxCLI/、dist/SealBox-linux-x64.zip）
+# Linux（出 dist/SealBox/、dist/SealBoxCLI/、dist/SealBox-linux-x64.zip、dist/sealbox_0.1.0_amd64.deb）
 bash packaging/build_linux.sh
+bash packaging/build_deb.sh
 ```
 
 - 构建前 `packaging/build.py` 会把当前平台的 7-Zip 复制进 `_vendor/7z`，产物自带压缩内核，目标机器无需再装 7-Zip。
@@ -133,5 +138,8 @@ bash packaging/build_linux.sh
 - `dist/SealBox/SealBox.exe`：窗口版（无控制台），右键菜单、开机自启动都指向它。
 - `dist/SealBoxCLI/SealBoxCLI.exe`：控制台版，终端里跑 `--seal --cli` / `--extract --cli` / `--verify --cli`。
 - `dist/SealBox-win64.zip`：上述两个目录，解压即用。
+- `dist/SealBoxSetup-0.1.0.exe`：Windows 单文件安装器（NSIS，含开始菜单、卸载、可选右键菜单/自启）。
+- `dist/SealBox-0.1.0-macos-arm64.dmg`：macOS 安装镜像（拖入 Applications）。
+- `dist/sealbox_0.1.0_amd64.deb`：Linux 安装包（`sudo apt install ./...deb`）。
 - `dist/SHA256SUMS.txt`：校验和。
 - macOS / Linux：同结构；macOS 用 `SealBox.app`，由本机脚本或 CI 构建。

@@ -50,11 +50,37 @@ jobs:
       - name: 构建
         run: python packaging/build.py
 
-      - name: 上传产物
+      - name: 安装 NSIS (Windows)
+        if: runner.os == 'Windows'
+        run: choco install nsis -y --no-progress
+
+      - name: 构建安装器 (Windows)
+        if: runner.os == 'Windows'
+        run: powershell -ExecutionPolicy Bypass -File packaging/build_installer.ps1
+
+      - name: 构建安装器 (macOS)
+        if: runner.os == 'macOS'
+        run: bash packaging/build_dmg.sh
+
+      - name: 构建安装器 (Linux)
+        if: runner.os == 'Linux'
+        run: bash packaging/build_deb.sh
+
+      - name: 上传应用包
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
           path: |
             dist/*.zip
             dist/SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: 上传安装器
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}-installer
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.deb
           if-no-files-found: error

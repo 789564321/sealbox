@@ -1104,7 +1104,7 @@ class MainWindow(QMainWindow):
         QApplication.quit()
 
     # ---------- 外部投递 ----------
-    def startup(self, paths, action="auto", formats=None, out_dir=None, pwd_style=None, pwd_text=None):
+    def startup(self, paths, action="auto", formats=None, out_dir=None, pwd_style=None):
         if paths:
             self.show_normal()
         if formats:
@@ -1116,7 +1116,6 @@ class MainWindow(QMainWindow):
             index = self.pwd_style_combo.findData(pwd_style)
             if index >= 0:
                 self.pwd_style_combo.setCurrentIndex(index)
-        self._pending_pw_text = pwd_text
         self.handle_paths([Path(p) for p in paths], action)
 
     def handle_payload(self, data: dict) -> None:
@@ -1127,7 +1126,6 @@ class MainWindow(QMainWindow):
             data.get("formats"),
             data.get("out_dir"),
             data.get("pwd_style"),
-            data.get("pwd_text"),
         )
 
     def handle_paths(self, paths: list[Path], action: str = "auto") -> None:
@@ -1151,10 +1149,9 @@ class MainWindow(QMainWindow):
 def run_gui(
     paths=None,
     action="auto",
-    formats=("7z",),
+    formats=("zip",),
     out_dir=None,
     pwd_style="short22",
-    pwd_text=None,
     tray_only: bool = False,
 ) -> int:
     app = QApplication.instance()
@@ -1167,18 +1164,25 @@ def run_gui(
     app.setQuitOnLastWindowClosed(False)
 
     instance = SingleInstance()
+    payload = {
+        "paths": list(paths or []),
+        "action": action,
+        "formats": list(formats or ("zip",)),
+        "out_dir": str(out_dir) if out_dir else None,
+        "pwd_style": pwd_style,
+    }
     if not instance.try_start():
-        instance.notify(
-            {
-                "paths": list(paths or []),
-                "action": action,
-                "formats": list(formats or ("7z",)),
-                "out_dir": str(out_dir) if out_dir else None,
-                "pwd_style": pwd_style,
-                "pwd_text": pwd_text,
-            }
-        )
-        return EXIT_OK
+        if instance.notify(payload):
+            return EXIT_OK
+        # 旧实例存在但不回 ACK：可能是卡死或残留管道，尝试接管
+        if not instance.try_start():
+            QMessageBox.critical(
+                None,
+                "SealBox",
+                "已有 SealBox 实例在运行，但无法与它通信。\n"
+                "请从系统托盘退出旧实例后重试。",
+            )
+            return 1
 
     window = MainWindow()
     instance.payload.connect(window.handle_payload)
@@ -1194,7 +1198,7 @@ def run_gui(
     QTimer.singleShot(
         0,
         lambda: window.startup(
-            list(paths or []), action, formats, out_dir, pwd_style, pwd_text
+            list(paths or []), action, formats, out_dir, pwd_style
         ),
     )
     return app.exec()

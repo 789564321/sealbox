@@ -38,7 +38,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--format", default="zip", help="7z / zip / sfx，逗号分隔；all = 三种")
     parser.add_argument("--out", help="输出目录")
     parser.add_argument("--name", help="输出文件名（不含扩展名）")
-    parser.add_argument("--pwd", help="指定密码；省略则自动生成")
+    parser.add_argument("--pwd", help="解压/校验时输入密码；加密模式禁止手动指定")
     parser.add_argument(
         "--pwd-file",
         default="auto",
@@ -129,7 +129,6 @@ def main(argv: list[str] | None = None) -> int:
                 formats=_safe_formats(args.format),
                 out_dir=args.out,
                 pwd_style=args.pwd_style,
-                pwd_text=args.pwd,
                 tray_only=args.tray,
             )
 
@@ -151,6 +150,9 @@ def _safe_formats(spec: str) -> tuple[str, ...]:
 
 
 def _cli_seal(args: argparse.Namespace, paths: list[str]) -> int:
+    if args.pwd is not None:
+        print("加密密码由程序自动生成（UUID），不能用 --pwd 指定。", file=sys.stderr)
+        return 1
     try:
         formats = _parse_formats(args.format)
     except ValueError as exc:

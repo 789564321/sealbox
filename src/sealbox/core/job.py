@@ -259,7 +259,11 @@ def execute_task(
         )
         out_dir.mkdir(parents=True, exist_ok=True)
         base = _sanitize_base(task.options.base_name or default_base_name(inputs))
-        pw = task.pw_text or pw_mod.generate(task.options.pwd_style)
+        if task.pw_text and pw_mod.is_generated(task.pw_text):
+            pw = task.pw_text
+        else:
+            # 加密口令只能是 UUID 派生值，拒绝外部手动指定。
+            pw = pw_mod.generate(task.options.pwd_style)
         task.pw_text = pw
         formats = [f for f in task.options.formats if f in FORMATS] or ["zip"]
         total = len(formats)

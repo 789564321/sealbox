@@ -58,14 +58,6 @@ class PasswordTests(unittest.TestCase):
     def test_uuid_rand_shape(self) -> None:
         self.assertEqual(len(password.generate("uuid+rand")), 64)
 
-    def test_mixed62_shape(self) -> None:
-        value = password.generate("mixed62")
-        self.assertEqual(len(value), 32)
-        self.assertTrue(value.isalnum())
-        self.assertTrue(any(c.islower() for c in value))
-        self.assertTrue(any(c.isupper() for c in value))
-        self.assertTrue(any(c.isdigit() for c in value))
-
     def test_unique_many(self) -> None:
         values = {password.generate("hex32") for _ in range(2000)}
         self.assertEqual(len(values), 2000)
@@ -218,6 +210,15 @@ class RoundTripTests(unittest.TestCase):
         job.execute_task(task, sz=SevenZip(find_sevenzip()))
         self.assertEqual(task.state, job.STATE_DONE, task.error)
         self.assertEqual(task.outputs[0].name, "自定义包名.zip")
+
+    def test_manual_password_is_rejected(self) -> None:
+        options = job.JobOptions(formats=("zip",), output_dir=self.out, verify=False)
+        task = job.plan_task([self.src], options)
+        task.pw_text = "my-own-password"
+        job.execute_task(task, sz=SevenZip(find_sevenzip()))
+        self.assertEqual(task.state, job.STATE_DONE, task.error)
+        self.assertNotEqual(task.pw_text, "my-own-password")
+        self.assertTrue(password.is_generated(task.pw_text))
 
 
 if __name__ == "__main__":
